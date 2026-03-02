@@ -95,7 +95,40 @@ kill <PID>
 
 ---
 
-## 5. Send a simple chat message
+## 5. Run as a systemd service (recommended)
+
+Running via systemd is preferred over `nohup` — it auto-starts on boot, restarts on failure, and logs go to `journald`.
+
+Copy the service file:
+
+```bash
+sudo cp llama-server-qwen3.5-27b.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable llama-server-qwen3.5-27b
+sudo systemctl start llama-server-qwen3.5-27b
+```
+
+Check status and logs:
+
+```bash
+systemctl status llama-server-qwen3.5-27b
+journalctl -u llama-server-qwen3.5-27b -f
+```
+
+Other useful commands:
+
+```bash
+sudo systemctl stop llama-server-qwen3.5-27b
+sudo systemctl restart llama-server-qwen3.5-27b
+```
+
+The server listens on `0.0.0.0:8001`, accessible from other machines on the network.
+
+> **Note:** `-ngl 99` is omitted from the service file due to CUDA memory fragmentation on Jetson after extended uptime. Add it back if you have clean memory after a fresh boot.
+
+---
+
+## 6. Send a simple chat message
 
 ```bash
 curl -s http://127.0.0.1:8001/v1/chat/completions \
@@ -112,7 +145,7 @@ The response has two fields:
 
 ---
 
-## 6. Tool call test script
+## 7. Tool call test script
 
 Save as `test_tool_call.py` and run with `uv run test_tool_call.py`.
 
@@ -265,3 +298,4 @@ USER QUERY: Write me a story.
 USER QUERY: What files are in the current directory?
   → calls terminal(command="ls -la")
   FINAL ANSWER: (formatted file listing)
+```
