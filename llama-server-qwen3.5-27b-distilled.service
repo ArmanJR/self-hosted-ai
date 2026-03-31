@@ -1,0 +1,36 @@
+[Unit]
+Description=llama.cpp server — Qwen3.5-27B Claude Opus Reasoning Distilled Q4_K_M
+After=network.target
+
+[Service]
+Type=simple
+User=arman
+WorkingDirectory=/home/arman/ai/llama.cpp
+
+ExecStart=/home/arman/ai/llama.cpp/llama-server \
+    -m /media/arman/BlueSSD/AI/ggufs/Qwen3.5-27B-Claude-4.6-Opus-Reasoning-Distilled.Q4_K_M.gguf \
+    --alias Qwen3.5-27B-Claude-Opus-Distilled \
+    --host 0.0.0.0 \
+    --port 8001 \
+    -np 1 \
+    -fa on \
+    --no-mmap \
+    -ctk q4_0 \
+    -ctv q4_0 \
+    --ctx-size 131072 \
+    --temp 0.6 \
+    --top-k 20 \
+    --top-p 0.95 \
+    --min-p 0.0 \
+    --cache-reuse 256 \
+    --reasoning-format deepseek
+
+Restart=on-failure
+RestartSec=5
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=llama-server-distilled
+
+[Install]
+WantedBy=multi-user.target
